@@ -878,20 +878,21 @@ const CloudBounceGame: React.FC<{
   // Pompom Physics State
   const [posX, setPosX] = useState(150);
   const [posY, setPosY] = useState(200);
-  const [vy, setVy] = useState(-10);
+  const [vy, setVy] = useState(-11.5);
   const [vx, setVx] = useState(0);
 
   const [coins, setCoins] = useState(0);
   const [cloudsLanded, setCloudsLanded] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
-  // Initial Platforms Setup
+  // Initial Platforms Setup (Guaranteed Safe Clouds + Optional Side Spikes)
   const [clouds, setClouds] = useState<PhysicsCloud[]>([
     { id: 1, x: 130, y: 300, width: 75, type: 'normal' },
-    { id: 2, x: 40, y: 210, width: 70, type: 'golden', hasCoin: true },
-    { id: 3, x: 210, y: 130, width: 68, type: 'moving', dx: 2.2 },
-    { id: 4, x: 90, y: 50, width: 68, type: 'spike' },
-    { id: 5, x: 220, y: -20, width: 70, type: 'boost' },
+    { id: 2, x: 40, y: 235, width: 70, type: 'golden', hasCoin: true },
+    { id: 3, x: 210, y: 170, width: 68, type: 'moving', dx: 2.2 },
+    { id: 4, x: 40, y: 105, width: 68, type: 'normal' },
+    { id: 45, x: 200, y: 105, width: 68, type: 'spike' },
+    { id: 5, x: 130, y: 40, width: 70, type: 'boost' },
   ]);
 
   // Main 60FPS Real-Time Physics Loop
@@ -943,34 +944,57 @@ const CloudBounceGame: React.FC<{
 
             const filtered = updated.filter((c) => c.y < containerHeight + 40);
 
-            while (filtered.length < 5) {
+            // Spawn platforms at comfortable 55-70px vertical gaps
+            while (filtered.length < 7) {
               const highestY = Math.min(...filtered.map((c) => c.y), 90);
+              const nextY = highestY - (55 + Math.floor(Math.random() * 15));
+
+              const safeOnLeft = Math.random() < 0.5;
+              const safeX = safeOnLeft
+                ? Math.floor(20 + Math.random() * 100)
+                : Math.floor(190 + Math.random() * 80);
+
               const rType = Math.random();
-              let type: 'normal' | 'golden' | 'boost' | 'fragile' | 'moving' | 'spike' = 'normal';
+              let type: 'normal' | 'golden' | 'boost' | 'fragile' | 'moving' = 'normal';
               let dx = 0;
 
-              if (rType < 0.20) {
+              if (rType < 0.25) {
                 type = 'moving';
-                dx = Math.random() < 0.5 ? 2.5 : -2.5;
-              } else if (rType < 0.35) {
+                dx = Math.random() < 0.5 ? 2.2 : -2.2;
+              } else if (rType < 0.45) {
                 type = 'fragile';
-              } else if (rType < 0.50) {
+              } else if (rType < 0.65) {
                 type = 'golden';
-              } else if (rType < 0.62) {
+              } else if (rType < 0.80) {
                 type = 'boost';
-              } else if (rType < 0.82) {
-                type = 'spike';
               }
 
+              // Guaranteed Safe Cloud at this height
               filtered.push({
                 id: Date.now() + Math.random(),
-                x: Math.floor(Math.random() * (containerWidth - 80)),
-                y: highestY - (75 + Math.random() * 25),
-                width: 68 + Math.floor(Math.random() * 8),
+                x: safeX,
+                y: nextY,
+                width: 68 + Math.floor(Math.random() * 10),
                 type,
                 dx,
-                hasCoin: type !== 'spike' && Math.random() < 0.35,
+                hasCoin: Math.random() < 0.4,
               });
+
+              // Optional Spike Hazard beside Safe Cloud (40% chance per level)
+              if (Math.random() < 0.40) {
+                const spikeX = safeOnLeft
+                  ? Math.floor(190 + Math.random() * 80)
+                  : Math.floor(20 + Math.random() * 90);
+
+                filtered.push({
+                  id: Date.now() + Math.random() + 0.1,
+                  x: spikeX,
+                  y: nextY,
+                  width: 64 + Math.floor(Math.random() * 8),
+                  type: 'spike',
+                  hasCoin: false,
+                });
+              }
             }
 
             return filtered;
@@ -1010,7 +1034,7 @@ const CloudBounceGame: React.FC<{
             if (vy > 0 && !bounced) {
               bounced = true;
 
-              const bounceForce = cloud.type === 'boost' ? -14 : -10;
+              const bounceForce = cloud.type === 'boost' ? -15.5 : -11.5;
               setVy(bounceForce);
               setCloudsLanded((c) => c + 1);
 
