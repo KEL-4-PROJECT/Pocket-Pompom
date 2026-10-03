@@ -717,7 +717,7 @@ const CatchMochiGame: React.FC<{
 };
 
 // ============================================================================
-// COMPONENT 3: CLOUD BOUNCE
+// COMPONENT 3: CLOUD BOUNCE (SVG GRAPHICS, NO EMOJIS OR PILL FRAMES)
 // ============================================================================
 interface PhysicsCloud {
   id: number;
@@ -728,6 +728,142 @@ interface PhysicsCloud {
   dx?: number;
   hasCoin?: boolean;
 }
+
+const CloudPlatformGraphic: React.FC<{ cloud: PhysicsCloud }> = ({ cloud }) => {
+  const { width, type, hasCoin } = cloud;
+
+  if (type === 'spike') {
+    const spikeCount = Math.max(3, Math.floor(width / 16));
+    const spikeWidth = width / spikeCount;
+
+    return (
+      <div className="relative flex flex-col items-center drop-shadow-[0_4px_10px_rgba(225,29,72,0.85)]">
+        <svg width={width} height={26} viewBox={`0 0 ${width} 26`} className="overflow-visible">
+          <defs>
+            <linearGradient id={`spikeGrad_${cloud.id}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#f43f5e" />
+              <stop offset="45%" stopColor="#be123c" />
+              <stop offset="100%" stopColor="#4c0519" />
+            </linearGradient>
+          </defs>
+          {Array.from({ length: spikeCount }).map((_, i) => {
+            const x1 = i * spikeWidth;
+            const xMid = x1 + spikeWidth / 2;
+            const x2 = (i + 1) * spikeWidth;
+            return (
+              <g key={i}>
+                <polygon
+                  points={`${x1},26 ${xMid},2 ${x2},26`}
+                  fill={`url(#spikeGrad_${cloud.id})`}
+                  stroke="#fda4af"
+                  strokeWidth="1.2"
+                />
+                <line x1={x1} y1={26} x2={xMid} y2={2} stroke="#ffffff" strokeWidth="1" opacity="0.6" />
+              </g>
+            );
+          })}
+          <rect x={0} y={22} width={width} height={4} fill="#4c0519" rx={1} />
+        </svg>
+      </div>
+    );
+  }
+
+  let baseGradStart = '#ffffff';
+  let baseGradEnd = '#e0e7ff';
+  let shadowColor = 'rgba(99, 102, 241, 0.25)';
+
+  if (type === 'golden') {
+    baseGradStart = '#fef08a';
+    baseGradEnd = '#f59e0b';
+    shadowColor = 'rgba(245, 158, 11, 0.45)';
+  } else if (type === 'boost') {
+    baseGradStart = '#a7f3d0';
+    baseGradEnd = '#10b981';
+    shadowColor = 'rgba(16, 185, 129, 0.45)';
+  } else if (type === 'fragile') {
+    baseGradStart = '#cbd5e1';
+    baseGradEnd = '#64748b';
+    shadowColor = 'rgba(100, 116, 139, 0.35)';
+  } else if (type === 'moving') {
+    baseGradStart = '#bae6fd';
+    baseGradEnd = '#0284c7';
+    shadowColor = 'rgba(2, 132, 199, 0.45)';
+  }
+
+  return (
+    <div
+      className="relative flex flex-col items-center select-none"
+      style={{ filter: `drop-shadow(0 6px 10px ${shadowColor})` }}
+    >
+      {/* SVG Coin on Top */}
+      {hasCoin && (
+        <div className="absolute -top-5 z-20 animate-bounce">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" fill="#fbbf24" stroke="#d97706" strokeWidth="2" />
+            <circle cx="12" cy="12" r="7" fill="#fef08a" opacity="0.6" />
+            <text x="12" y="16" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#92400e">
+              ★
+            </text>
+          </svg>
+        </div>
+      )}
+
+      {/* SVG Fluffy Volumetric Cloud Platform */}
+      <svg width={width} height={32} viewBox={`0 0 ${width} 32`} className="overflow-visible">
+        <defs>
+          <linearGradient id={`cloudGrad_${cloud.id}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={baseGradStart} />
+            <stop offset="100%" stopColor={baseGradEnd} />
+          </linearGradient>
+        </defs>
+
+        <g fill={`url(#cloudGrad_${cloud.id})`}>
+          <rect x={4} y={12} width={width - 8} height={18} rx={9} />
+          <circle cx={width * 0.28} cy={13} r={11} />
+          <circle cx={width * 0.52} cy={10} r={14} />
+          <circle cx={width * 0.76} cy={14} r={10} />
+        </g>
+
+        <circle cx={width * 0.5} cy={8} r={8} fill="#ffffff" opacity="0.45" />
+
+        {type === 'fragile' && (
+          <path
+            d={`M ${width * 0.3} 12 L ${width * 0.45} 18 L ${width * 0.4} 24 L ${width * 0.6} 28`}
+            stroke="#1e293b"
+            strokeWidth="2"
+            fill="none"
+            strokeDasharray="2,2"
+          />
+        )}
+
+        {type === 'boost' && (
+          <path
+            d={`M ${width * 0.5 - 6} 22 L ${width * 0.5} 14 L ${width * 0.5 + 6} 22`}
+            stroke="#047857"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        )}
+
+        {type === 'golden' && (
+          <polygon
+            points={`${width * 0.5},11 ${width * 0.5 + 2.5},16 ${width * 0.5 + 7},16 ${width * 0.5 + 3.5},19.5 ${width * 0.5 + 5},24.5 ${width * 0.5},21.5 ${width * 0.5 - 5},24.5 ${width * 0.5 - 3.5},19.5 ${width * 0.5 - 7},16 ${width * 0.5 - 2.5},16`}
+            fill="#d97706"
+          />
+        )}
+
+        {type === 'moving' && (
+          <g stroke="#0284c7" strokeWidth="1.5" strokeLinecap="round" opacity="0.8">
+            <line x1={width * 0.2} y1={20} x2={width * 0.4} y2={20} />
+            <line x1={width * 0.5} y1={23} x2={width * 0.8} y2={23} />
+          </g>
+        )}
+      </svg>
+    </div>
+  );
+};
 
 const CloudBounceGame: React.FC<{
   pet: Pet;
@@ -823,7 +959,6 @@ const CloudBounceGame: React.FC<{
               } else if (rType < 0.62) {
                 type = 'boost';
               } else if (rType < 0.82) {
-                // 20% Chance of Spike Hazard! 🌵
                 type = 'spike';
               }
 
@@ -881,7 +1016,7 @@ const CloudBounceGame: React.FC<{
 
               if (cloud.type === 'golden') {
                 audioEngine.playCoinSound();
-                setCoins((c) => c + 15); // UNLIMITED COINS!
+                setCoins((c) => c + 15);
               } else if (cloud.type === 'boost') {
                 audioEngine.playWinSound();
               } else {
@@ -890,7 +1025,7 @@ const CloudBounceGame: React.FC<{
 
               if (cloud.hasCoin) {
                 audioEngine.playCoinSound();
-                setCoins((c) => c + 5); // UNLIMITED COINS!
+                setCoins((c) => c + 5);
               }
 
               if (cloud.type === 'fragile') {
@@ -911,26 +1046,31 @@ const CloudBounceGame: React.FC<{
   }, [isCountingDown, posX, posY, vy, vx, gameOver, coins, cloudsLanded, onFinish]);
 
   return (
-    <div className="relative w-full flex flex-col items-center">
+    <div className="relative w-full flex flex-col items-center select-none">
       {isCountingDown && (
         <CountdownOverlay onComplete={() => setIsCountingDown(false)} />
       )}
 
       {/* GAME OVER SPIKE / FALL OVERLAY */}
       {gameOver && (
-        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md rounded-3xl animate-fade-in text-center p-6">
-          <div className="text-5xl mb-2 animate-bounce">🌵💥</div>
+        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md rounded-3xl animate-fade-in text-center p-6 select-none">
+          <div className="mb-3 animate-bounce">
+            <svg width="60" height="40" viewBox="0 0 60 40">
+              <polygon points="10,38 20,6 30,38" fill="#f43f5e" stroke="#fda4af" strokeWidth="2" />
+              <polygon points="30,38 40,2 50,38" fill="#be123c" stroke="#fda4af" strokeWidth="2" />
+            </svg>
+          </div>
           <h3 className="text-2xl font-black text-rose-400 tracking-wider">GAME OVER!</h3>
           <p className="mt-1 text-xs font-bold text-slate-300">Pompom menabrak duri tajam!</p>
           <div className="mt-4 flex flex-col items-center space-y-1 text-xs font-black text-amber-300 bg-white/10 px-5 py-2.5 rounded-2xl border border-amber-400/40">
-            <span>Tinggi: ☁️ {cloudsLanded} Awan</span>
-            <span className="text-sm">Total Koin: 🪙 {coins}</span>
+            <span>Tinggi: {cloudsLanded} Awan</span>
+            <span className="text-sm">Total Koin: {coins}</span>
           </div>
         </div>
       )}
 
       {/* Top HUD */}
-      <div className="mb-3 flex w-full items-center justify-between rounded-2xl bg-white/10 px-4 py-2 backdrop-blur-md">
+      <div className="mb-3 flex w-full items-center justify-between rounded-2xl bg-white/10 px-4 py-2 backdrop-blur-md border border-white/10">
         <button onClick={onExit} className="text-xs font-bold text-indigo-300 hover:text-white">
           ◀ Kembali ke Arcade
         </button>
@@ -944,35 +1084,20 @@ const CloudBounceGame: React.FC<{
 
       {/* Real-Time Arcade Physics Arena */}
       <div className="relative mb-3 h-[360px] w-full max-w-sm overflow-hidden rounded-3xl bg-gradient-to-b from-indigo-950 via-purple-950 to-slate-950 border-4 border-indigo-500/50 shadow-2xl">
-        {/* Sky Stars */}
-        <div className="pointer-events-none absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#FFF 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+        {/* Sky Stars Background */}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-20"
+          style={{ backgroundImage: 'radial-gradient(#FFF 1px, transparent 1px)', backgroundSize: '16px 16px' }}
+        />
 
-        {/* Floating Cloud Platforms & Spike Hazards */}
+        {/* Floating Pure SVG Clouds & Metallic Spikes (No frames, No text pill badges!) */}
         {clouds.map((cloud) => (
           <div
             key={cloud.id}
             style={{ left: cloud.x, top: cloud.y, width: cloud.width }}
-            className={`absolute flex items-center justify-center rounded-full py-1 text-[10px] font-black shadow-lg transition-transform ${
-              cloud.type === 'spike'
-                ? 'bg-rose-600 text-white border-2 border-rose-400 animate-pulse drop-shadow-[0_0_10px_rgba(225,29,72,0.8)]'
-                : cloud.type === 'golden'
-                ? 'bg-amber-300 text-amber-950 border-2 border-amber-500 animate-pulse'
-                : cloud.type === 'boost'
-                ? 'bg-emerald-400 text-emerald-950 border-2 border-emerald-600'
-                : cloud.type === 'fragile'
-                ? 'bg-slate-400 text-slate-900 border-2 border-slate-600 border-dashed'
-                : cloud.type === 'moving'
-                ? 'bg-cyan-400 text-cyan-950 border-2 border-cyan-600'
-                : 'bg-white text-indigo-950 border-2 border-indigo-200'
-            }`}
+            className="absolute pointer-events-none"
           >
-            {cloud.hasCoin && <span className="mr-1">🪙</span>}
-            {cloud.type === 'spike' && '🌵 DURI'}
-            {cloud.type === 'golden' && '⭐ GOLD'}
-            {cloud.type === 'boost' && '🚀 BOOST'}
-            {cloud.type === 'fragile' && '⚡ CRACK'}
-            {cloud.type === 'moving' && '↔️ SLIDE'}
-            {cloud.type === 'normal' && '☁️ CLOUD'}
+            <CloudPlatformGraphic cloud={cloud} />
           </div>
         ))}
 
