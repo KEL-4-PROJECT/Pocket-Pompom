@@ -627,12 +627,14 @@ export default function PocketPompomMain() {
         <div className="grid grid-cols-5 gap-2 rounded-2xl bg-white/90 p-2 shadow-xl backdrop-blur-md dark:bg-slate-800/90 border border-pink-200 dark:border-slate-700">
           {/* Feed Button -> Switch to Dining Room */}
           <button
+            disabled={pet.is_sleeping}
             onClick={() => {
               handleUserFirstInteraction();
               audioEngine.playPopSound();
               setCurrentScreen('feed');
             }}
-            className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-orange-600 transition-all hover:bg-orange-100 active:scale-95 dark:text-orange-400 dark:hover:bg-slate-700"
+            className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-orange-600 transition-all hover:bg-orange-100 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none dark:text-orange-400 dark:hover:bg-slate-700"
+            title={pet.is_sleeping ? 'Pompom sedang tidur! 💤' : 'Ruang Makan'}
           >
             <PixelFeedIcon size={26} />
             <span className="mt-1 text-[10px]">Makan</span>
@@ -640,12 +642,14 @@ export default function PocketPompomMain() {
 
           {/* Bath Button -> Switch to Bathroom */}
           <button
+            disabled={pet.is_sleeping}
             onClick={() => {
               handleUserFirstInteraction();
               audioEngine.playPopSound();
               setCurrentScreen('bath');
             }}
-            className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-sky-600 transition-all hover:bg-sky-100 active:scale-95 dark:text-sky-400 dark:hover:bg-slate-700"
+            className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-sky-600 transition-all hover:bg-sky-100 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none dark:text-sky-400 dark:hover:bg-slate-700"
+            title={pet.is_sleeping ? 'Pompom sedang tidur! 💤' : 'Kamar Mandi'}
           >
             <PixelBathIcon size={26} />
             <span className="mt-1 text-[10px]">Mandi</span>
@@ -653,12 +657,14 @@ export default function PocketPompomMain() {
 
           {/* Play Button -> Switch to Arcade */}
           <button
+            disabled={pet.is_sleeping}
             onClick={() => {
               handleUserFirstInteraction();
               audioEngine.playPopSound();
               setCurrentScreen('play');
             }}
-            className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-purple-600 transition-all hover:bg-purple-100 active:scale-95 dark:text-purple-400 dark:hover:bg-slate-700"
+            className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-purple-600 transition-all hover:bg-purple-100 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none dark:text-purple-400 dark:hover:bg-slate-700"
+            title={pet.is_sleeping ? 'Pompom sedang tidur! 💤' : 'Arcade Arena'}
           >
             <PixelPlayIcon size={26} />
             <span className="mt-1 text-[10px]">Main</span>
@@ -666,12 +672,14 @@ export default function PocketPompomMain() {
 
           {/* Wardrobe Button -> Switch to Dressing Room */}
           <button
+            disabled={pet.is_sleeping}
             onClick={() => {
               handleUserFirstInteraction();
               audioEngine.playPopSound();
               setCurrentScreen('wardrobe');
             }}
-            className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-pink-600 transition-all hover:bg-pink-100 active:scale-95 dark:text-pink-400 dark:hover:bg-slate-700"
+            className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-pink-600 transition-all hover:bg-pink-100 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none dark:text-pink-400 dark:hover:bg-slate-700"
+            title={pet.is_sleeping ? 'Pompom sedang tidur! 💤' : 'Lemari Pakaian'}
           >
             <PixelWardrobeIcon size={26} />
             <span className="mt-1 text-[10px]">Lemari</span>
@@ -682,7 +690,7 @@ export default function PocketPompomMain() {
             onClick={toggleSleepMode}
             className={`flex flex-col items-center justify-center rounded-xl p-2 font-bold transition-all active:scale-95 ${
               pet.is_sleeping
-                ? 'bg-amber-400 text-slate-900 shadow-md'
+                ? 'bg-amber-400 text-slate-900 shadow-md animate-pulse'
                 : 'text-indigo-600 hover:bg-indigo-100 dark:text-indigo-400 dark:hover:bg-slate-700'
             }`}
           >
