@@ -29,33 +29,120 @@ export interface PetDataWithInventory {
 }
 
 /**
- * Fetch the first pet record from the database along with its inventory items.
+ * Fetch or create a pet profile by owner/pet name.
  */
-export async function getPetData(): Promise<PetDataWithInventory> {
-  const { data: petData, error: petError } = await supabase
+export async function getOrCreatePetByName(name: string): Promise<PetDataWithInventory> {
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    throw new Error('Nama tidak boleh kosong');
+  }
+
+  // 1. Search for existing pet profile with matching name (case-insensitive)
+  const { data: existingPet, error: searchError } = await supabase
     .from('pets')
     .select('*')
-    .limit(1)
+    .ilike('pet_name', trimmedName)
     .maybeSingle();
 
-  if (petError) {
-    console.error('Error fetching pet data:', petError.message);
-    throw petError;
+  if (searchError) {
+    console.error('Error searching pet profile:', searchError.message);
   }
 
-  if (!petData) {
-    return { pet: null, inventory: [] };
+  let petData: Pet;
+
+  if (existingPet) {
+    petData = existingPet as Pet;
+  } else {
+    // 2. Create brand new pet profile with 500 starting coins & 100 stats
+    const { data: newPet, error: createError } = await supabase
+      .from('pets')
+      .insert([
+        {
+          pet_name: trimmedName,
+          hunger: 100,
+          energy: 100,
+          happiness: 100,
+          cleanliness: 100,
+          coins: 500,
+          is_sleeping: false,
+          equipped_outfit: 'none',
+          equipped_accessory: 'none',
+        },
+      ])
+      .select('*')
+      .single();
+
+    if (createError || !newPet) {
+      console.error('Error creating pet profile:', createError?.message);
+      throw new Error('Gagal membuat profil Pompom baru.');
+    }
+
+    petData = newPet as Pet;
   }
 
+  // 3. Fetch user_inventory for this pet
   const { data: inventoryData, error: inventoryError } = await supabase
     .from('user_inventory')
     .select('*')
     .eq('pet_id', petData.id);
 
   if (inventoryError) {
-    console.error('Error fetching inventory data:', inventoryError.message);
-    throw inventoryError;
+    console.error('Error fetching inventory:', inventoryError.message);
   }
+
+  // Save active profile name to localStorage for fast auto-login
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('pompom_active_name', petData.pet_name);
+    // Add to saved profiles list in localStorage
+    try {
+      const savedList = JSON.parse(localStorage.getItem('pompom_saved_profiles') || '[]');
+      if (!savedList.includes(petData.pet_name)) {
+        savedList.push(petData.pet_name);
+        localStorage.setItem('pompom_saved_profiles', JSON.stringify(savedList));
+      }
+    } catch {
+      // ignore JSON parse error
+    }
+  }
+
+  return {
+    pet: petData,
+    inventory: (inventoryData || []) as InventoryItem[],
+  };
+}
+
+/**
+ * Fetch default or active pet data from database.
+ */
+export async function getPetData(): Promise<PetDataWithInventory> {
+  let activeName = '';
+  if (typeof window !== 'undefined') {
+    activeName = localStorage.getItem('pompom_active_name') || '';
+  }
+
+  if (activeName) {
+    try {
+      return await getOrCreatePetByName(activeName);
+    } catch {
+      // Fallback if error
+    }
+  }
+
+  // Fallback: Fetch first record if no active name
+  const { data: petData, error: petError } = await supabase
+    .from('pets')
+    .select('*')
+    .limit(1)
+    .maybeSingle();
+
+  if (petError || !petData) {
+    return { pet: null, inventory: [] };
+  }
+
+  const { data: inventoryData } = await supabase
+    .from('user_inventory')
+    .select('*')
+    .eq('pet_id', petData.id);
 
   return {
     pet: petData as Pet,
@@ -115,7 +202,6 @@ export async function buyAndEquipItem(
   itemType: 'outfit' | 'accessory',
   cost: number
 ): Promise<{ pet: Pet; inventoryItem: InventoryItem }> {
-  // 1. Get current pet coins
   const { data: currentPet, error: fetchError } = await supabase
     .from('pets')
     .select('coins, equipped_outfit, equipped_accessory')
@@ -127,10 +213,9 @@ export async function buyAndEquipItem(
   }
 
   if (currentPet.coins < cost) {
-    throw new Error('Insufficient coins to purchase this item');
+    throw new Error('Koin tidak cukup untuk membeli item ini');
   }
 
-  // 2. Insert item into user_inventory
   const { data: newInventory, error: inventoryError } = await supabase
     .from('user_inventory')
     .insert([
@@ -148,7 +233,6 @@ export async function buyAndEquipItem(
     throw inventoryError;
   }
 
-  // 3. Deduct coins & equip item on pet
   const newCoins = currentPet.coins - cost;
   const equipPayload =
     itemType === 'outfit'

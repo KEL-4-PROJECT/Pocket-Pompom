@@ -7,6 +7,7 @@ import LivingRoomBackground from '@/components/LivingRoomBackground';
 import DiningRoomView, { FoodItem } from '@/components/DiningRoomView';
 import BathroomView from '@/components/BathroomView';
 import WardrobeView, { BoutiqueCatalogItem } from '@/components/WardrobeView';
+import EntryLoginModal from '@/components/EntryLoginModal';
 import {
   PixelCoin,
   PixelHunger,
@@ -23,6 +24,7 @@ import {
 } from '@/components/PixelIcons';
 import {
   getPetData,
+  getOrCreatePetByName,
   updatePetStats,
   equipItem,
   buyAndEquipItem,
@@ -39,6 +41,7 @@ export default function PocketPompomMain() {
   const [pet, setPet] = useState<Pet | null>(null);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [pompomState, setPompomState] = useState<PompomState>('idle');
   const [isAudioMuted, setIsAudioMuted] = useState(false);
 
@@ -81,15 +84,31 @@ export default function PocketPompomMain() {
             setPompomState('sleeping');
             audioEngine.setSleepBGM(true);
           }
+        } else {
+          // If no active profile, show login modal
+          setShowLoginModal(true);
         }
       } catch (err) {
         console.error('Failed to load Pompom data:', err);
+        setShowLoginModal(true);
       } finally {
         setLoading(false);
       }
     }
     loadData();
   }, []);
+
+  // Profile Login Handler
+  const handleProfileLogin = async (name: string) => {
+    handleUserFirstInteraction();
+    const result = await getOrCreatePetByName(name);
+    if (result.pet) {
+      setPet(result.pet);
+      setInventory(result.inventory);
+      setShowLoginModal(false);
+      setDialogText(`Selamat datang kembali, ${result.pet.pet_name}! Data koin & lemari kamu tersimpan rapi ✨`);
+    }
+  };
 
   // First interaction BGM trigger
   const handleUserFirstInteraction = () => {
@@ -193,7 +212,7 @@ export default function PocketPompomMain() {
       setDialogText('Mengantuk sekali... Tidurkan Pompom di kasur yuk! 😴');
     } else {
       const quotes = [
-        'Pompom sayang kamu! 💕',
+        `Pompom sayang ${pet.pet_name}! 💕`,
         'Mochi mochi~ Kenyal dan imut!',
         'Kamu pemilik terbaik di dunia! ✨',
         'Mau coba baju baru di Lemari hari ini?',
@@ -383,7 +402,7 @@ export default function PocketPompomMain() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-pink-100 font-mono text-pink-700">
+      <div className="flex min-h-screen items-center justify-center bg-pink-100 font-mono text-pink-700 select-none">
         <div className="text-center">
           <div className="mb-4 inline-block h-10 w-10 animate-spin rounded-full border-4 border-pink-500 border-t-transparent"></div>
           <p className="text-xl font-bold tracking-widest">MEMUAT POCKET POMPOM...</p>
@@ -392,17 +411,20 @@ export default function PocketPompomMain() {
     );
   }
 
-  if (!pet) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-pink-100 font-mono text-pink-700">
-        <p className="text-xl font-bold">Gagal memuat data Pompom. Silakan muat ulang halaman.</p>
-      </div>
-    );
-  }
-
   // ==========================================================================
   // FULL SCREEN DEDICATED ROOM VIEWS SWITCHER
   // ==========================================================================
+
+  // Entry Login Modal (if no pet or manually switching profile)
+  if (showLoginModal || !pet) {
+    return (
+      <EntryLoginModal
+        onLogin={handleProfileLogin}
+        currentName={pet?.pet_name}
+        onCancel={pet ? () => setShowLoginModal(false) : undefined}
+      />
+    );
+  }
 
   // 1. Dining Room & Kitchen View (Feed)
   if (currentScreen === 'feed') {
@@ -457,7 +479,7 @@ export default function PocketPompomMain() {
   return (
     <main
       onClick={handleUserFirstInteraction}
-      className={`relative flex min-h-screen flex-col items-center justify-between font-mono transition-colors duration-500 ${
+      className={`relative flex min-h-screen flex-col items-center justify-between font-mono transition-colors duration-500 select-none ${
         isNightMode ? 'bg-slate-900 text-purple-200' : 'bg-amber-50 text-slate-800'
       }`}
     >
@@ -470,7 +492,15 @@ export default function PocketPompomMain() {
         <div className="mb-3 flex items-center justify-between rounded-xl bg-white/80 p-3 shadow-md backdrop-blur-md dark:bg-slate-800/80">
           <div>
             <h1 className="text-lg font-black tracking-wider text-pink-600 dark:text-pink-400">POCKET POMPOM</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Nama Pompom: {pet.pet_name}</p>
+            <div className="flex items-center space-x-1.5 mt-0.5">
+              <span className="text-xs text-slate-600 dark:text-slate-300 font-bold">👤 {pet.pet_name}</span>
+              <button
+                onClick={() => setShowLoginModal(true)}
+                className="text-[10px] font-black text-pink-600 underline hover:text-pink-700 bg-pink-50 px-1.5 py-0.5 rounded"
+              >
+                Ganti
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center space-x-2">
