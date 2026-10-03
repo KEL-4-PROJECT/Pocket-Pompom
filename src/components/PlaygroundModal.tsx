@@ -249,12 +249,12 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
                   Cloud Bounce
                 </h3>
                 <p className="mt-1 text-xs text-slate-400">
-                  Lompat tinggi menembus awan empuk menuju langit bertabur bintang!
+                  Lompat tinggi menembus awan empuk, kumpulkan koin & hindari duri tajam!
                 </p>
               </div>
 
               <div className="mt-4 flex items-center justify-between border-t border-indigo-500/20 pt-3">
-                <span className="text-xs font-black text-amber-400">🪙 s/d 200 Koin</span>
+                <span className="text-xs font-black text-amber-400">🪙 Koin Tanpa Batas!</span>
                 <span className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-black text-white shadow-lg group-hover:bg-indigo-500">
                   MAIN ▶
                 </span>
@@ -724,7 +724,7 @@ interface PhysicsCloud {
   x: number;
   y: number;
   width: number;
-  type: 'normal' | 'golden' | 'boost' | 'fragile' | 'moving';
+  type: 'normal' | 'golden' | 'boost' | 'fragile' | 'moving' | 'spike';
   dx?: number;
   hasCoin?: boolean;
 }
@@ -749,12 +749,12 @@ const CloudBounceGame: React.FC<{
   const [cloudsLanded, setCloudsLanded] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
-  // Initial Platforms Setup (Narrower 68px width!)
+  // Initial Platforms Setup
   const [clouds, setClouds] = useState<PhysicsCloud[]>([
     { id: 1, x: 130, y: 300, width: 75, type: 'normal' },
     { id: 2, x: 40, y: 210, width: 70, type: 'golden', hasCoin: true },
     { id: 3, x: 210, y: 130, width: 68, type: 'moving', dx: 2.2 },
-    { id: 4, x: 90, y: 50, width: 68, type: 'fragile' },
+    { id: 4, x: 90, y: 50, width: 68, type: 'spike' },
     { id: 5, x: 220, y: -20, width: 70, type: 'boost' },
   ]);
 
@@ -810,18 +810,21 @@ const CloudBounceGame: React.FC<{
             while (filtered.length < 5) {
               const highestY = Math.min(...filtered.map((c) => c.y), 90);
               const rType = Math.random();
-              let type: 'normal' | 'golden' | 'boost' | 'fragile' | 'moving' = 'normal';
+              let type: 'normal' | 'golden' | 'boost' | 'fragile' | 'moving' | 'spike' = 'normal';
               let dx = 0;
 
-              if (rType < 0.25) {
+              if (rType < 0.20) {
                 type = 'moving';
                 dx = Math.random() < 0.5 ? 2.5 : -2.5;
-              } else if (rType < 0.50) {
+              } else if (rType < 0.35) {
                 type = 'fragile';
-              } else if (rType < 0.65) {
+              } else if (rType < 0.50) {
                 type = 'golden';
-              } else if (rType < 0.75) {
+              } else if (rType < 0.62) {
                 type = 'boost';
+              } else if (rType < 0.82) {
+                // 20% Chance of Spike Hazard! 🌵
+                type = 'spike';
               }
 
               filtered.push({
@@ -831,7 +834,7 @@ const CloudBounceGame: React.FC<{
                 width: 68 + Math.floor(Math.random() * 8),
                 type,
                 dx,
-                hasCoin: Math.random() < 0.35,
+                hasCoin: type !== 'spike' && Math.random() < 0.35,
               });
             }
 
@@ -849,19 +852,27 @@ const CloudBounceGame: React.FC<{
         return nextY;
       });
 
-      // 4. Landing & Bounce Collision Check with Clouds
-      if (vy > 0) {
-        const pompomFeetY = posY + pompomSize - 10;
+      // 4. Collision Check with Clouds (Bounce or Spike)
+      setClouds((prevClouds) => {
+        let bounced = false;
+        const nextClouds = prevClouds.map((cloud) => {
+          const pompomFeetY = posY + pompomSize - 10;
+          const isIntersectY =
+            pompomFeetY >= cloud.y - 12 && pompomFeetY <= cloud.y + 18;
+          const isIntersectX =
+            posX + pompomSize - 12 >= cloud.x && posX + 12 <= cloud.x + cloud.width;
 
-        setClouds((prevClouds) => {
-          let bounced = false;
-          const nextClouds = prevClouds.map((cloud) => {
-            const isIntersectY =
-              pompomFeetY >= cloud.y - 6 && pompomFeetY <= cloud.y + 14;
-            const isIntersectX =
-              posX + pompomSize - 15 >= cloud.x && posX + 15 <= cloud.x + cloud.width;
+          if (isIntersectY && isIntersectX) {
+            // SPIKE HAZARD COLLISION! 🌵
+            if (cloud.type === 'spike' && !gameOver) {
+              setGameOver(true);
+              audioEngine.playLoseSound();
+              setTimeout(() => onFinish(coins, cloudsLanded), 1200);
+              return cloud;
+            }
 
-            if (isIntersectY && isIntersectX && !bounced) {
+            // BOUNCE CHECK (Falling down)
+            if (vy > 0 && !bounced) {
               bounced = true;
 
               const bounceForce = cloud.type === 'boost' ? -14 : -10;
@@ -870,7 +881,7 @@ const CloudBounceGame: React.FC<{
 
               if (cloud.type === 'golden') {
                 audioEngine.playCoinSound();
-                setCoins((c) => Math.min(200, c + 15));
+                setCoins((c) => c + 15); // UNLIMITED COINS!
               } else if (cloud.type === 'boost') {
                 audioEngine.playWinSound();
               } else {
@@ -879,7 +890,7 @@ const CloudBounceGame: React.FC<{
 
               if (cloud.hasCoin) {
                 audioEngine.playCoinSound();
-                setCoins((c) => Math.min(200, c + 5));
+                setCoins((c) => c + 5); // UNLIMITED COINS!
               }
 
               if (cloud.type === 'fragile') {
@@ -888,21 +899,34 @@ const CloudBounceGame: React.FC<{
 
               return { ...cloud, hasCoin: false };
             }
-            return cloud;
-          });
-
-          return nextClouds;
+          }
+          return cloud;
         });
-      }
+
+        return nextClouds;
+      });
     }, 28);
 
     return () => clearInterval(interval);
-  }, [isCountingDown, posX, posY, vy, vx, gameOver, coins, cloudsLanded]);
+  }, [isCountingDown, posX, posY, vy, vx, gameOver, coins, cloudsLanded, onFinish]);
 
   return (
     <div className="relative w-full flex flex-col items-center">
       {isCountingDown && (
         <CountdownOverlay onComplete={() => setIsCountingDown(false)} />
+      )}
+
+      {/* GAME OVER SPIKE / FALL OVERLAY */}
+      {gameOver && (
+        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md rounded-3xl animate-fade-in text-center p-6">
+          <div className="text-5xl mb-2 animate-bounce">🌵💥</div>
+          <h3 className="text-2xl font-black text-rose-400 tracking-wider">GAME OVER!</h3>
+          <p className="mt-1 text-xs font-bold text-slate-300">Pompom menabrak duri tajam!</p>
+          <div className="mt-4 flex flex-col items-center space-y-1 text-xs font-black text-amber-300 bg-white/10 px-5 py-2.5 rounded-2xl border border-amber-400/40">
+            <span>Tinggi: ☁️ {cloudsLanded} Awan</span>
+            <span className="text-sm">Total Koin: 🪙 {coins}</span>
+          </div>
+        </div>
       )}
 
       {/* Top HUD */}
@@ -923,13 +947,15 @@ const CloudBounceGame: React.FC<{
         {/* Sky Stars */}
         <div className="pointer-events-none absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#FFF 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
 
-        {/* Floating Cloud Platforms */}
+        {/* Floating Cloud Platforms & Spike Hazards */}
         {clouds.map((cloud) => (
           <div
             key={cloud.id}
             style={{ left: cloud.x, top: cloud.y, width: cloud.width }}
             className={`absolute flex items-center justify-center rounded-full py-1 text-[10px] font-black shadow-lg transition-transform ${
-              cloud.type === 'golden'
+              cloud.type === 'spike'
+                ? 'bg-rose-600 text-white border-2 border-rose-400 animate-pulse drop-shadow-[0_0_10px_rgba(225,29,72,0.8)]'
+                : cloud.type === 'golden'
                 ? 'bg-amber-300 text-amber-950 border-2 border-amber-500 animate-pulse'
                 : cloud.type === 'boost'
                 ? 'bg-emerald-400 text-emerald-950 border-2 border-emerald-600'
@@ -941,6 +967,7 @@ const CloudBounceGame: React.FC<{
             }`}
           >
             {cloud.hasCoin && <span className="mr-1">🪙</span>}
+            {cloud.type === 'spike' && '🌵 DURI'}
             {cloud.type === 'golden' && '⭐ GOLD'}
             {cloud.type === 'boost' && '🚀 BOOST'}
             {cloud.type === 'fragile' && '⚡ CRACK'}
@@ -955,7 +982,7 @@ const CloudBounceGame: React.FC<{
           className={`absolute transition-transform ${vy < 0 ? 'scale-110 -rotate-3' : 'scale-100 rotate-3'}`}
         >
           <PompomPixel
-            state={vy < 0 ? 'play' : 'idle'}
+            state={gameOver ? 'sad' : vy < 0 ? 'play' : 'idle'}
             outfit={pet.equipped_outfit}
             accessory={pet.equipped_accessory}
             size={pompomSize}
