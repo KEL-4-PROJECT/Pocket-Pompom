@@ -89,6 +89,14 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
     scoreText?: string;
   } | null>(null);
 
+  // Switch to High-Energy Arcade BGM on mount, restore Day BGM on exit
+  useEffect(() => {
+    audioEngine.setArcadeBGM(true);
+    return () => {
+      audioEngine.setArcadeBGM(false);
+    };
+  }, []);
+
   // Energy & Cleanliness Check before starting any game
   const startGame = (game: GameType) => {
     if (pet.energy < 10) {
