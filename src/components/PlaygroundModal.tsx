@@ -893,14 +893,14 @@ const CloudBounceGame: React.FC<{
   const [cloudsLanded, setCloudsLanded] = useState(0);
   const [gameOver, setGameOver] = useState(false);
 
-  // Initial Platforms Setup (Guaranteed Safe Clouds + Optional Side Spikes)
+  // Initial Platforms Setup (100% Safe Starting Platforms)
   const [clouds, setClouds] = useState<PhysicsCloud[]>([
     { id: 1, x: 130, y: 300, width: 75, type: 'normal' },
     { id: 2, x: 40, y: 235, width: 70, type: 'golden', hasCoin: true },
     { id: 3, x: 210, y: 170, width: 68, type: 'moving', dx: 2.2 },
     { id: 4, x: 40, y: 105, width: 68, type: 'normal' },
-    { id: 45, x: 200, y: 105, width: 68, type: 'spike' },
-    { id: 5, x: 130, y: 40, width: 70, type: 'boost' },
+    { id: 5, x: 210, y: 105, width: 68, type: 'normal' },
+    { id: 6, x: 130, y: 40, width: 70, type: 'boost' },
   ]);
 
   // Main 60FPS Real-Time Physics Loop
@@ -988,17 +988,27 @@ const CloudBounceGame: React.FC<{
                 hasCoin: Math.random() < 0.4,
               });
 
-              // Optional Spike Hazard beside Safe Cloud (40% chance per level)
-              if (Math.random() < 0.40) {
+              // Progressive Spike Chance: 0% at start, scaling gradually with clouds landed
+              let spikeChance = 0;
+              if (cloudsLanded >= 8 && cloudsLanded < 18) {
+                spikeChance = 0.15; // 15% chance after 8 clouds landed
+              } else if (cloudsLanded >= 18 && cloudsLanded < 35) {
+                spikeChance = 0.22; // 22% chance after 18 clouds landed
+              } else if (cloudsLanded >= 35) {
+                spikeChance = 0.30; // Max 30% chance for higher scores
+              }
+
+              // Optional Spike Hazard positioned away from the center (on outer side edges only)
+              if (spikeChance > 0 && Math.random() < spikeChance) {
                 const spikeX = safeOnLeft
-                  ? Math.floor(190 + Math.random() * 80)
-                  : Math.floor(20 + Math.random() * 90);
+                  ? Math.floor(270 + Math.random() * 30) // Far right edge
+                  : Math.floor(15 + Math.random() * 30);  // Far left edge
 
                 filtered.push({
                   id: Date.now() + Math.random() + 0.1,
                   x: spikeX,
                   y: nextY,
-                  width: 64 + Math.floor(Math.random() * 8),
+                  width: 46 + Math.floor(Math.random() * 8), // Sleeker, non-cluttering width
                   type: 'spike',
                   hasCoin: false,
                 });
