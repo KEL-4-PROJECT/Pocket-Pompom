@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PixelCoin, PixelCloseIcon, PixelPlayIcon } from '@/components/PixelIcons';
 import PompomPixel from '@/components/PompomPixel';
 import { Pet } from '@/lib/petService';
@@ -19,6 +19,11 @@ type GameType = 'menu' | 'cup_shuffle' | 'catch_mochi' | 'cloud_bounce';
 // ============================================================================
 const CountdownOverlay: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const [count, setCount] = useState<number | 'GO!'>(3);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     audioEngine.playPopSound();
@@ -38,7 +43,7 @@ const CountdownOverlay: React.FC<{ onComplete: () => void }> = ({ onComplete }) 
     }, 2400);
 
     const timerGo = setTimeout(() => {
-      onComplete();
+      onCompleteRef.current();
     }, 3100);
 
     return () => {
@@ -47,7 +52,7 @@ const CountdownOverlay: React.FC<{ onComplete: () => void }> = ({ onComplete }) 
       clearTimeout(timer1);
       clearTimeout(timerGo);
     };
-  }, [onComplete]);
+  }, []);
 
   return (
     <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md rounded-3xl animate-fade-in">
