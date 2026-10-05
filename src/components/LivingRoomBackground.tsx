@@ -250,7 +250,12 @@ export const LivingRoomBackground: React.FC<LivingRoomBackgroundProps> = ({
             )}
 
             {/* Floating Pixel Clouds */}
-            <div className="absolute top-8 left-0 text-xs anim-cloud opacity-80">☁️</div>
+            <div className="absolute top-8 left-0 anim-cloud opacity-80">
+              <svg width="24" height="14" viewBox="0 0 16 10">
+                <rect x="3" y="3" width="10" height="5" fill="#FFFFFF" rx="2" />
+                <rect x="1" y="5" width="14" height="4" fill="#FFFFFF" rx="2" />
+              </svg>
+            </div>
           </div>
 
           {/* Window Frame Panes */}

@@ -1,7 +1,23 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { PixelCoin, PixelCloseIcon, PixelPlayIcon } from '@/components/PixelIcons';
+import {
+  PixelCoin,
+  PixelCloseIcon,
+  PixelPlayIcon,
+  PixelSoda,
+  PixelMochi,
+  PixelCloud,
+  PixelHappiness,
+  PixelTimer,
+  PixelStrawberry,
+  PixelStar,
+  PixelRock,
+  PixelSpike,
+  PixelEnergy,
+  PixelCleanliness,
+  PixelSparkle,
+} from '@/components/PixelIcons';
 import PompomPixel from '@/components/PompomPixel';
 import { Pet } from '@/lib/petService';
 import { audioEngine } from '@/lib/audioService';
@@ -58,7 +74,7 @@ const CountdownOverlay: React.FC<{ onComplete: () => void }> = ({ onComplete }) 
     <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-md rounded-3xl animate-fade-in">
       <div className="text-center select-none">
         <p className="text-xs font-black tracking-widest text-pink-400 uppercase mb-2 animate-bounce">
-          GET READY! 🎮
+          GET READY!
         </p>
         <div
           key={String(count)}
@@ -100,7 +116,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
   // Energy & Cleanliness Check before starting any game
   const startGame = (game: GameType) => {
     if (pet.energy < 10) {
-      setErrorMessage('Pompom is too tired to play! Put Pompom to sleep first~ 😴');
+      setErrorMessage('Pompom is too tired to play! Put Pompom to sleep first~');
       audioEngine.playLoseSound();
       return;
     }
@@ -144,7 +160,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
         <div className="flex items-center space-x-2">
           <PixelPlayIcon size={24} />
           <h1 className="text-sm md:text-base font-black tracking-wider text-purple-300">
-            POMPOM'S ARCADE ARENA 🎮
+            POMPOM'S ARCADE ARENA
           </h1>
         </div>
 
@@ -169,7 +185,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
           {/* Hero Pompom Arcade Host */}
           <div className="mb-6 flex flex-col items-center">
             <div className="mb-3 max-w-xs rounded-2xl bg-white px-5 py-2.5 text-center text-xs font-bold text-slate-900 shadow-xl border-2 border-purple-400 animate-pulse">
-              "Pilih permainan di bawah! Ayo main bareng Pompom~ 🍡"
+              "Pilih permainan di bawah! Ayo main bareng Pompom~"
             </div>
             <PompomPixel
               state="play"
@@ -179,8 +195,11 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
             />
           </div>
 
-          <p className="mb-4 text-xs font-bold text-purple-300 text-center">
-            Setiap sesi permainan mengonsumsi ⚡ -10% Energi & 🧼 -5% Kebersihan.
+          <p className="mb-4 text-xs font-bold text-purple-300 text-center flex items-center justify-center space-x-2">
+            <span>Setiap sesi permainan mengonsumsi</span>
+            <span className="inline-flex items-center text-amber-300"><PixelEnergy size={14} className="mr-0.5" /> -10% Energi</span>
+            <span>&</span>
+            <span className="inline-flex items-center text-sky-300"><PixelCleanliness size={14} className="mr-0.5" /> -5% Kebersihan.</span>
           </p>
 
           {/* 3 Large Arcade Game Cards */}
@@ -192,7 +211,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
             >
               <div>
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-3xl">🥤</span>
+                  <PixelSoda size={36} />
                   <span className="rounded-full bg-purple-500/30 px-3 py-1 text-[10px] font-black text-purple-300 border border-purple-400/40">
                     3 Ronde
                   </span>
@@ -206,7 +225,10 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
               </div>
 
               <div className="mt-4 flex items-center justify-between border-t border-purple-500/20 pt-3">
-                <span className="text-xs font-black text-amber-400">🪙 s/d 180 Koin</span>
+                <span className="text-xs font-black text-amber-400 flex items-center space-x-1">
+                  <PixelCoin size={14} />
+                  <span>s/d 180 Koin</span>
+                </span>
                 <span className="rounded-xl bg-purple-600 px-4 py-2 text-xs font-black text-white shadow-lg group-hover:bg-purple-500">
                   MAIN ▶
                 </span>
@@ -220,7 +242,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
             >
               <div>
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-3xl">🍡</span>
+                  <PixelMochi size={36} />
                   <span className="rounded-full bg-pink-500/30 px-3 py-1 text-[10px] font-black text-pink-300 border border-pink-400/40">
                     30 Detik
                   </span>
@@ -234,7 +256,10 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
               </div>
 
               <div className="mt-4 flex items-center justify-between border-t border-pink-500/20 pt-3">
-                <span className="text-xs font-black text-amber-400">🪙 s/d 120 Koin</span>
+                <span className="text-xs font-black text-amber-400 flex items-center space-x-1">
+                  <PixelCoin size={14} />
+                  <span>s/d 120 Koin</span>
+                </span>
                 <span className="rounded-xl bg-pink-600 px-4 py-2 text-xs font-black text-white shadow-lg group-hover:bg-pink-500">
                   MAIN ▶
                 </span>
@@ -248,7 +273,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
             >
               <div>
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-3xl">☁️</span>
+                  <PixelCloud size={36} />
                   <span className="rounded-full bg-indigo-500/30 px-3 py-1 text-[10px] font-black text-indigo-300 border border-indigo-400/40">
                     Arcade Jump
                   </span>
@@ -262,7 +287,10 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
               </div>
 
               <div className="mt-4 flex items-center justify-between border-t border-indigo-500/20 pt-3">
-                <span className="text-xs font-black text-amber-400">🪙 Koin Tanpa Batas!</span>
+                <span className="text-xs font-black text-amber-400 flex items-center space-x-1">
+                  <PixelCoin size={14} />
+                  <span>Koin Tanpa Batas!</span>
+                </span>
                 <span className="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-black text-white shadow-lg group-hover:bg-indigo-500">
                   MAIN ▶
                 </span>
@@ -286,7 +314,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
               else if (scoreCorrect === 2) { coins = 120; hap = 20; }
               else if (scoreCorrect === 1) { coins = 60; hap = 15; }
 
-              handleFinishSession('Cup Shuffle 🥤', coins, hap, `Skor: ${scoreCorrect}/3 Tebakan Benar!`);
+              handleFinishSession('Cup Shuffle', coins, hap, `Skor: ${scoreCorrect}/3 Tebakan Benar!`);
             }}
             onExit={() => setActiveGame('menu')}
           />
@@ -301,7 +329,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
           <CatchMochiGame
             pet={pet}
             onFinish={(totalCoins) => {
-              handleFinishSession('Catch the Mochi 🍡', totalCoins, 30, `Makanan Tertangkap: 🪙 ${totalCoins} Koin!`);
+              handleFinishSession('Catch the Mochi', totalCoins, 30, `Makanan Tertangkap: ${totalCoins} Koin!`);
             }}
             onExit={() => setActiveGame('menu')}
           />
@@ -316,7 +344,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
           <CloudBounceGame
             pet={pet}
             onFinish={(coinsEarned, cloudsLanded) => {
-              handleFinishSession('Cloud Bounce ☁️', coinsEarned, 25, `Berhasil Menjajaki ${cloudsLanded} Awan!`);
+              handleFinishSession('Cloud Bounce', coinsEarned, 25, `Berhasil Menjajaki ${cloudsLanded} Awan!`);
             }}
             onExit={() => setActiveGame('menu')}
           />
@@ -335,7 +363,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
               accessory={pet.equipped_accessory}
               size={220}
             />
-            <h2 className="mt-4 text-2xl font-black text-purple-300">Selesai Bermain {summary.gameTitle}! 🎉</h2>
+            <h2 className="mt-4 text-2xl font-black text-purple-300">Selesai Bermain {summary.gameTitle}!</h2>
             {summary.scoreText && (
               <p className="mt-1 text-sm font-bold text-slate-300">{summary.scoreText}</p>
             )}
@@ -346,8 +374,9 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
               <PixelCoin size={32} />
               <span>+ {summary.coinsEarned} Koin</span>
             </div>
-            <div className="text-sm font-bold text-pink-300">
-              💖 + {summary.happinessGain}% Bonus Kebahagiaan
+            <div className="text-sm font-bold text-pink-300 flex items-center justify-center space-x-2">
+              <PixelHappiness size={20} />
+              <span>+ {summary.happinessGain}% Bonus Kebahagiaan</span>
             </div>
           </div>
 
@@ -365,6 +394,7 @@ export const PlaygroundModal: React.FC<PlaygroundModalProps> = ({
     </div>
   );
 };
+
 
 // ============================================================================
 // COMPONENT 1: CUP SHUFFLE
@@ -488,10 +518,10 @@ const CupShuffleGame: React.FC<{
       </div>
 
       <div className="mb-3 rounded-2xl bg-white/20 px-6 py-2 text-center text-xs font-bold text-white backdrop-blur-md">
-        {phase === 'peek' && '👀 Perhatikan tempat mochi stroberi bersembunyi!'}
-        {phase === 'shuffle' && '🌀 Mangkuk diacak super cepat... Perhatikan baik-baik!'}
-        {phase === 'guess' && `👉 Klik mangkuk tempat mochi berada! (${timer} dtk)`}
-        {phase === 'reveal' && (selectedCup === mochiCup ? '🎉 Benar! Kamu menemukannya!' : '❌ Ops! Mangkuk salah!')}
+        {phase === 'peek' && 'Perhatikan tempat mochi stroberi bersembunyi!'}
+        {phase === 'shuffle' && 'Mangkuk diacak super cepat... Perhatikan baik-baik!'}
+        {phase === 'guess' && `Klik mangkuk tempat mochi berada! (${timer} dtk)`}
+        {phase === 'reveal' && (selectedCup === mochiCup ? 'Benar! Kamu menemukannya!' : 'Ops! Mangkuk salah!')}
       </div>
 
       <div className="relative h-60 w-full max-w-xl rounded-3xl bg-amber-900/60 p-6 border-4 border-amber-800 shadow-2xl overflow-hidden">
@@ -515,7 +545,9 @@ const CupShuffleGame: React.FC<{
               className="absolute cursor-pointer hover:scale-105 active:scale-95 transition-transform flex flex-col items-center"
             >
               {isMochiOwner && (
-                <div className="absolute left-6 bottom-3 z-0 text-3xl">🍡</div>
+                <div className="absolute left-6 bottom-3 z-0">
+                  <PixelMochi size={32} />
+                </div>
               )}
 
               <div
@@ -612,7 +644,7 @@ const CatchMochiGame: React.FC<{
           // Hitbox collision check with Pompom's basket
           if (nextY >= 250 && nextY <= 295 && Math.abs(item.x - pompomX) < 42) {
             if (item.type === 'rock') {
-              // INSTANT GAME OVER UPON HITTING A ROCK 🪨
+              // INSTANT GAME OVER UPON HITTING A ROCK
               setIsGameOver(true);
               audioEngine.playLoseSound();
               setTimeout(() => {
@@ -653,11 +685,15 @@ const CatchMochiGame: React.FC<{
       {/* GAME OVER OVERLAY */}
       {isGameOver && (
         <div className="absolute inset-0 z-40 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md rounded-3xl animate-fade-in text-center p-6">
-          <div className="text-5xl mb-2 animate-bounce">💥🪨</div>
+          <div className="mb-2 animate-bounce flex items-center justify-center space-x-2">
+            <PixelRock size={36} />
+            <PixelSpike size={36} />
+          </div>
           <h3 className="text-2xl font-black text-pink-400 tracking-wider">GAME OVER!</h3>
           <p className="mt-1 text-xs font-bold text-slate-300">Pompom tertimpa batu berduri!</p>
-          <div className="mt-4 text-base font-black text-amber-300 bg-white/10 px-4 py-2 rounded-2xl border border-amber-400/40">
-            Koin Terkumpul: 🪙 {coins}
+          <div className="mt-4 flex items-center justify-center space-x-2 text-base font-black text-amber-300 bg-white/10 px-4 py-2 rounded-2xl border border-amber-400/40">
+            <PixelCoin size={20} />
+            <span>Koin Terkumpul: {coins}</span>
           </div>
         </div>
       )}
@@ -667,7 +703,10 @@ const CatchMochiGame: React.FC<{
           ◀ Kembali ke Arcade
         </button>
         <div className="flex items-center space-x-4 text-xs font-black">
-          <span className="text-pink-300 font-bold">⏱️ Waktu: {timeLeft}s</span>
+          <span className="text-pink-300 font-bold flex items-center space-x-1">
+            <PixelTimer size={16} />
+            <span>Waktu: {timeLeft}s</span>
+          </span>
           <span className="flex items-center space-x-1 text-amber-300">
             <PixelCoin size={18} /> <span>{coins}</span>
           </span>
@@ -680,12 +719,12 @@ const CatchMochiGame: React.FC<{
           <div
             key={item.id}
             style={{ left: item.x, top: item.y }}
-            className="absolute text-2xl pointer-events-none drop-shadow-md"
+            className="absolute pointer-events-none drop-shadow-md"
           >
-            {item.type === 'mochi' && '🍡'}
-            {item.type === 'strawberry' && '🍓'}
-            {item.type === 'star' && '⭐'}
-            {item.type === 'rock' && '🪨'}
+            {item.type === 'mochi' && <PixelMochi size={28} />}
+            {item.type === 'strawberry' && <PixelStrawberry size={28} />}
+            {item.type === 'star' && <PixelStar size={28} />}
+            {item.type === 'rock' && <PixelRock size={28} />}
           </div>
         ))}
 
@@ -809,9 +848,7 @@ const CloudPlatformGraphic: React.FC<{ cloud: PhysicsCloud }> = ({ cloud }) => {
           <svg width="18" height="18" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" fill="#fbbf24" stroke="#d97706" strokeWidth="2" />
             <circle cx="12" cy="12" r="7" fill="#fef08a" opacity="0.6" />
-            <text x="12" y="16" fontSize="10" fontWeight="bold" textAnchor="middle" fill="#92400e">
-              ★
-            </text>
+            <polygon points="12,6 13.5,9.5 17,9.5 14,12 15,15.5 12,13 9,15.5 10,12 7,9.5 10.5,9.5" fill="#92400e" />
           </svg>
         </div>
       )}
@@ -1040,7 +1077,7 @@ const CloudBounceGame: React.FC<{
             posX + pompomSize - 12 >= cloud.x && posX + 12 <= cloud.x + cloud.width;
 
           if (isIntersectY && isIntersectX) {
-            // SPIKE HAZARD COLLISION! 🌵
+            // SPIKE HAZARD COLLISION!
             if (cloud.type === 'spike' && !gameOver) {
               setGameOver(true);
               audioEngine.playLoseSound();

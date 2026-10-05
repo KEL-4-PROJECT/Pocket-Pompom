@@ -21,6 +21,7 @@ import {
   PixelWardrobeIcon,
   PixelAudioIcon,
   PixelMuteIcon,
+  PixelUser,
 } from '@/components/PixelIcons';
 import {
   getPetData,
@@ -106,7 +107,7 @@ export default function PocketPompomMain() {
       setPet(result.pet);
       setInventory(result.inventory);
       setShowLoginModal(false);
-      setDialogText(`Selamat datang kembali, ${result.pet.pet_name}! Data koin & lemari kamu tersimpan rapi ✨`);
+      setDialogText(`Selamat datang kembali, ${result.pet.pet_name}! Data koin & lemari kamu tersimpan rapi`);
     }
   };
 
@@ -177,19 +178,19 @@ export default function PocketPompomMain() {
 
     if (pet.is_sleeping) {
       setPompomState('sleeping');
-      setDialogText('Zzz... Pompom sedang bermimpi stroberi ~ 💤');
+      setDialogText('Zzz... Pompom sedang bermimpi stroberi ~');
     } else if (pet.hunger < 30) {
       setPompomState('sad');
-      setDialogText('Perut Pompom lapar banget nih! Ayo beri makan mochi di Dapur~ 🍡');
+      setDialogText('Perut Pompom lapar banget nih! Ayo beri makan mochi di Dapur~');
     } else if (pet.cleanliness < 30) {
       setPompomState('sad');
-      setDialogText('Pompom terasa kotor nih... Ayo mandi di Kamar Mandi! 🧼');
+      setDialogText('Pompom terasa kotor nih... Ayo mandi di Kamar Mandi!');
     } else if (pet.energy < 30) {
       setPompomState('sad');
-      setDialogText('Pompom mengantuk sekali... Tidurkan Pompom di kasur yuk! 😴');
+      setDialogText('Pompom mengantuk sekali... Tidurkan Pompom di kasur yuk!');
     } else if (pet.happiness < 30) {
       setPompomState('sad');
-      setDialogText('Pompom merasa sedih... Ayo main game di Arcade Arena! 🎮');
+      setDialogText('Pompom merasa sedih... Ayo main game di Arcade Arena!');
     } else {
       setPompomState('idle');
     }
@@ -203,20 +204,20 @@ export default function PocketPompomMain() {
     if (!pet) return;
 
     if (pet.is_sleeping) {
-      setDialogText('Zzz... Pompom sedang bermimpi stroberi ~ 💤');
+      setDialogText('Zzz... Pompom sedang bermimpi stroberi ~');
     } else if (pet.hunger < 30) {
-      setDialogText('Perut Pompom lapar banget! Beri makan mochi dong~ 🍡');
+      setDialogText('Perut Pompom lapar banget! Beri makan mochi dong~');
     } else if (pet.cleanliness < 30) {
-      setDialogText('Ih... Pompom kotor! Mandikan Pompom di Kamar Mandi dong~ 🧼');
+      setDialogText('Ih... Pompom kotor! Mandikan Pompom di Kamar Mandi dong~');
     } else if (pet.energy < 30) {
-      setDialogText('Mengantuk sekali... Tidurkan Pompom di kasur yuk! 😴');
+      setDialogText('Mengantuk sekali... Tidurkan Pompom di kasur yuk!');
     } else {
       const quotes = [
-        `Pompom sayang ${pet.pet_name}! 💕`,
+        `Pompom sayang ${pet.pet_name}!`,
         'Mochi mochi~ Kenyal dan imut!',
-        'Kamu pemilik terbaik di dunia! ✨',
+        'Kamu pemilik terbaik di dunia!',
         'Mau coba baju baru di Lemari hari ini?',
-        'Bermain bersama Pompom sangat menyenangkan! 🎈',
+        'Bermain bersama Pompom sangat menyenangkan!',
       ];
       const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
       setDialogText(randomQuote);
@@ -246,7 +247,7 @@ export default function PocketPompomMain() {
         : prev
     );
 
-    setDialogText(newSleepStatus ? 'Selamat tidur Pompom! Mimpinya indah ya~ 😴' : 'Selamat pagi! Pompom sudah bangun!');
+    setDialogText(newSleepStatus ? 'Selamat tidur Pompom! Mimpinya indah ya~' : 'Selamat pagi! Pompom sudah bangun!');
 
     try {
       await updatePetStats(pet.id, {
@@ -263,7 +264,7 @@ export default function PocketPompomMain() {
     if (!pet) return;
     const newClean = Math.min(100, pet.cleanliness + 5);
     setPet((prev) => (prev ? { ...prev, cleanliness: newClean } : prev));
-    setDialogText('Pompom menyiram tanaman hias! Daun-daun hijau segar~ 🌿 (+5 Clean)');
+    setDialogText('Pompom menyiram tanaman hias! Daun-daun hijau segar~ (+5 Clean)');
     await updatePetStats(pet.id, { cleanliness: newClean });
   };
 
@@ -271,21 +272,21 @@ export default function PocketPompomMain() {
     if (!pet) return;
     const newHap = Math.min(100, pet.happiness + 5);
     setPet((prev) => (prev ? { ...prev, happiness: newHap } : prev));
-    setDialogText('Hangat dan nyaman di dekat perapian! 🔥 (+5 Happy)');
+    setDialogText('Hangat dan nyaman di dekat perapian! (+5 Happy)');
     await updatePetStats(pet.id, { happiness: newHap });
   };
 
   const handleInteractClock = () => {
     const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setDialogText(`Ting tong! Waktu sekarang menunjukkan jam ${timeStr} ⏰`);
+    setDialogText(`Ting tong! Waktu sekarang menunjukkan jam ${timeStr}`);
   };
 
   const handleInteractBookshelf = () => {
-    setDialogText('Pompom sedang membaca buku dongeng sebelum tidur! 📖✨');
+    setDialogText('Pompom sedang membaca buku dongeng sebelum tidur!');
   };
 
   const handleInteractWindow = () => {
-    setDialogText('Melihat ke luar jendela! Hari yang cerah~ ☀️🌈');
+    setDialogText('Melihat ke luar jendela! Hari yang cerah~');
   };
 
   // General Update Handler for Rooms
@@ -493,7 +494,10 @@ export default function PocketPompomMain() {
           <div>
             <h1 className="text-lg font-black tracking-wider text-pink-600 dark:text-pink-400">POCKET POMPOM</h1>
             <div className="flex items-center space-x-1.5 mt-0.5">
-              <span className="text-xs text-slate-600 dark:text-slate-300 font-bold">👤 {pet.pet_name}</span>
+              <span className="text-xs text-slate-600 dark:text-slate-300 font-bold flex items-center">
+                <PixelUser size={14} className="mr-1" />
+                <span>{pet.pet_name}</span>
+              </span>
               <button
                 onClick={() => setShowLoginModal(true)}
                 className="text-[10px] font-black text-pink-600 underline hover:text-pink-700 bg-pink-50 px-1.5 py-0.5 rounded"
@@ -634,7 +638,7 @@ export default function PocketPompomMain() {
               setCurrentScreen('feed');
             }}
             className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-orange-600 transition-all hover:bg-orange-100 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none dark:text-orange-400 dark:hover:bg-slate-700"
-            title={pet.is_sleeping ? 'Pompom sedang tidur! 💤' : 'Ruang Makan'}
+            title={pet.is_sleeping ? 'Pompom sedang tidur!' : 'Ruang Makan'}
           >
             <PixelFeedIcon size={26} />
             <span className="mt-1 text-[10px]">Makan</span>
@@ -649,7 +653,7 @@ export default function PocketPompomMain() {
               setCurrentScreen('bath');
             }}
             className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-sky-600 transition-all hover:bg-sky-100 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none dark:text-sky-400 dark:hover:bg-slate-700"
-            title={pet.is_sleeping ? 'Pompom sedang tidur! 💤' : 'Kamar Mandi'}
+            title={pet.is_sleeping ? 'Pompom sedang tidur!' : 'Kamar Mandi'}
           >
             <PixelBathIcon size={26} />
             <span className="mt-1 text-[10px]">Mandi</span>
@@ -664,7 +668,7 @@ export default function PocketPompomMain() {
               setCurrentScreen('play');
             }}
             className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-purple-600 transition-all hover:bg-purple-100 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none dark:text-purple-400 dark:hover:bg-slate-700"
-            title={pet.is_sleeping ? 'Pompom sedang tidur! 💤' : 'Arcade Arena'}
+            title={pet.is_sleeping ? 'Pompom sedang tidur!' : 'Arcade Arena'}
           >
             <PixelPlayIcon size={26} />
             <span className="mt-1 text-[10px]">Main</span>
@@ -679,7 +683,7 @@ export default function PocketPompomMain() {
               setCurrentScreen('wardrobe');
             }}
             className="flex flex-col items-center justify-center rounded-xl p-2 font-bold text-pink-600 transition-all hover:bg-pink-100 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none dark:text-pink-400 dark:hover:bg-slate-700"
-            title={pet.is_sleeping ? 'Pompom sedang tidur! 💤' : 'Lemari Pakaian'}
+            title={pet.is_sleeping ? 'Pompom sedang tidur!' : 'Lemari Pakaian'}
           >
             <PixelWardrobeIcon size={26} />
             <span className="mt-1 text-[10px]">Lemari</span>

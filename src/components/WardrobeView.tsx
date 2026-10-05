@@ -3,7 +3,14 @@
 import React, { useState } from 'react';
 import PompomPixel from '@/components/PompomPixel';
 import ItemPixelIcon from '@/components/ItemPixelIcon';
-import { PixelCoin } from '@/components/PixelIcons';
+import {
+  PixelCoin,
+  PixelWardrobeIcon,
+  PixelOutfit,
+  PixelRibbon,
+  PixelStore,
+  PixelStar,
+} from '@/components/PixelIcons';
 import { Pet, InventoryItem } from '@/lib/petService';
 import { audioEngine } from '@/lib/audioService';
 
@@ -52,7 +59,7 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
   const [categoryFilter, setCategoryFilter] = useState<'all' | 'outfit' | 'accessory'>('all');
   const [previewOutfit, setPreviewOutfit] = useState<string | null>(null);
   const [previewAccessory, setPreviewAccessory] = useState<string | null>(null);
-  const [message, setMessage] = useState('Selamat datang di Lemari Pompom! Coba-coba baju di depan cermin 🪞');
+  const [message, setMessage] = useState('Selamat datang di Lemari Pompom! Coba-coba baju di depan cermin');
 
   const currentOutfit = previewOutfit ?? pet.equipped_outfit;
   const currentAccessory = previewAccessory ?? pet.equipped_accessory;
@@ -63,16 +70,16 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
     setPreviewAccessory(null);
     await onEquipItem(type, itemId);
     if (itemId === 'none') {
-      setMessage(`Dilepas! Pompom kembali polos ✨`);
+      setMessage(`Dilepas! Pompom kembali polos`);
     } else {
-      setMessage(`Dipakai: ${itemId.replace('_', ' ')}! Pompom makin imut~ ✨`);
+      setMessage(`Dipakai: ${itemId.replace('_', ' ')}! Pompom makin imut~`);
     }
   };
 
   const handleBuyItem = async (item: BoutiqueCatalogItem) => {
     if (pet.coins < item.cost) {
       audioEngine.playLoseSound();
-      setMessage(`Koin tidak cukup untuk ${item.name}! (Butuh 🪙 ${item.cost})`);
+      setMessage(`Koin tidak cukup untuk ${item.name}! (Butuh ${item.cost} Koin)`);
       return;
     }
 
@@ -80,7 +87,7 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
     setPreviewOutfit(null);
     setPreviewAccessory(null);
     await onBuyAndEquipItem(item);
-    setMessage(`Berhasil membeli & memakai ${item.name}! 🎉`);
+    setMessage(`Berhasil membeli & memakai ${item.name}!`);
   };
 
   // Filter closet inventory by subcategory
@@ -109,8 +116,9 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
           <span>⬅ Kembali ke Ruang Tengah</span>
         </button>
 
-        <h1 className="text-sm md:text-base font-black tracking-wider text-pink-700">
-          POMPOM DRESSING ROOM & BOUTIQUE 🎀
+        <h1 className="text-sm md:text-base font-black tracking-wider text-pink-700 flex items-center space-x-2">
+          <PixelWardrobeIcon size={20} />
+          <span>POMPOM DRESSING ROOM & BOUTIQUE</span>
         </h1>
 
         <div className="flex items-center space-x-2 rounded-xl bg-amber-100 px-3 py-1.5 font-black text-amber-800 shadow-inner">
@@ -229,20 +237,22 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
         <div className="mb-3 flex space-x-3">
           <button
             onClick={() => setActiveTab('closet')}
-            className={`flex-1 rounded-xl py-2 text-xs font-black transition-all ${
+            className={`flex-1 flex items-center justify-center space-x-2 rounded-xl py-2 text-xs font-black transition-all ${
               activeTab === 'closet' ? 'bg-pink-500 text-white shadow-md' : 'bg-pink-100 text-pink-900'
             }`}
           >
-            👚 Lemari Saya ({inventory.length})
+            <PixelOutfit size={18} />
+            <span>Lemari Saya ({inventory.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('boutique')}
-            className={`flex-1 rounded-xl py-2 text-xs font-black transition-all ${
+            className={`flex-1 flex items-center justify-center space-x-2 rounded-xl py-2 text-xs font-black transition-all ${
               activeTab === 'boutique' ? 'bg-purple-500 text-white shadow-md' : 'bg-purple-100 text-purple-900'
             }`}
           >
-            🛍️ Katalog Butik Premium
+            <PixelStore size={18} />
+            <span>Katalog Butik Premium</span>
           </button>
         </div>
 
@@ -250,13 +260,14 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
         <div className="mb-3 flex items-center justify-center space-x-2 bg-pink-50 p-1.5 rounded-2xl border border-pink-200">
           <button
             onClick={() => setCategoryFilter('all')}
-            className={`px-3 py-1 text-[11px] font-black rounded-xl transition-all ${
+            className={`flex items-center space-x-1 px-3 py-1 text-[11px] font-black rounded-xl transition-all ${
               categoryFilter === 'all'
                 ? 'bg-slate-800 text-white shadow-sm'
                 : 'bg-white text-slate-600 hover:bg-pink-100'
             }`}
           >
-            🌟 Semua Item
+            <PixelStar size={14} />
+            <span>Semua Item</span>
           </button>
 
           <button
@@ -267,7 +278,7 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
                 : 'bg-white text-pink-700 hover:bg-pink-100'
             }`}
           >
-            <span>👗</span>
+            <PixelOutfit size={14} />
             <span>Kategori Baju (Outfits)</span>
           </button>
 
@@ -279,7 +290,7 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
                 : 'bg-white text-purple-700 hover:bg-purple-100'
             }`}
           >
-            <span>🎀</span>
+            <PixelRibbon size={14} />
             <span>Kategori Aksesori</span>
           </button>
         </div>
@@ -313,10 +324,11 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
                         <h4 className="text-xs font-black text-slate-800 capitalize leading-tight">
                           {invItem.item_id.replace('_', ' ')}
                         </h4>
-                        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded flex items-center space-x-1 ${
                           invItem.item_type === 'outfit' ? 'bg-pink-100 text-pink-700' : 'bg-purple-100 text-purple-700'
                         }`}>
-                          {invItem.item_type === 'outfit' ? '👗 Outfit' : '🎀 Aksesori'}
+                          {invItem.item_type === 'outfit' ? <PixelOutfit size={12} /> : <PixelRibbon size={12} />}
+                          <span>{invItem.item_type === 'outfit' ? 'Outfit' : 'Aksesori'}</span>
                         </span>
                       </div>
                     </div>
@@ -355,7 +367,7 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
                   onClick={() => {
                     if (bItem.type === 'outfit') setPreviewOutfit(bItem.id);
                     else setPreviewAccessory(bItem.id);
-                    setMessage(`Mencoba ${bItem.name} di cermin! ✨`);
+                    setMessage(`Mencoba ${bItem.name} di cermin!`);
                   }}
                   className="cursor-pointer flex items-center justify-between rounded-2xl bg-purple-50/80 p-2.5 border border-purple-200 hover:border-purple-400 hover:bg-purple-100/90 transition-all active:scale-95 shadow-sm"
                 >
@@ -363,10 +375,11 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
                     <ItemPixelIcon itemId={bItem.id} size={40} />
                     <div>
                       <h4 className="text-xs font-black text-slate-800 leading-tight">{bItem.name}</h4>
-                      <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                      <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded flex items-center space-x-1 ${
                         bItem.type === 'outfit' ? 'bg-pink-100 text-pink-700' : 'bg-purple-100 text-purple-700'
                       }`}>
-                        {bItem.type === 'outfit' ? '👗 Outfit' : '🎀 Aksesori'}
+                        {bItem.type === 'outfit' ? <PixelOutfit size={12} /> : <PixelRibbon size={12} />}
+                        <span>{bItem.type === 'outfit' ? 'Outfit' : 'Aksesori'}</span>
                       </span>
                     </div>
                   </div>
@@ -412,3 +425,4 @@ export const WardrobeView: React.FC<WardrobeViewProps> = ({
 };
 
 export default WardrobeView;
+

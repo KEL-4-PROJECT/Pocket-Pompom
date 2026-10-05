@@ -2,7 +2,15 @@
 
 import React, { useState } from 'react';
 import PompomPixel from '@/components/PompomPixel';
-import { PixelCoin, PixelCleanliness, PixelToothbrushIcon, PixelToiletIcon, PixelBathtubIcon } from '@/components/PixelIcons';
+import {
+  PixelCoin,
+  PixelCleanliness,
+  PixelToothbrushIcon,
+  PixelToiletIcon,
+  PixelBathtubIcon,
+  PixelShower,
+  PixelSparkle,
+} from '@/components/PixelIcons';
 import { Pet } from '@/lib/petService';
 import { audioEngine } from '@/lib/audioService';
 
@@ -23,13 +31,13 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
   const [isSoapy, setIsSoapy] = useState(false);
   const [isBrushing, setIsBrushing] = useState(false);
   const [isFlushing, setIsFlushing] = useState(false);
-  const [message, setMessage] = useState('Welcome to Pompom\'s Cozy Bathroom! 🛁');
+  const [message, setMessage] = useState('Welcome to Pompom\'s Cozy Bathroom!');
 
   // Bathtub Soap
   const handleApplySoap = () => {
     audioEngine.playWaterSplash();
     setIsSoapy(true);
-    setMessage('Rubbed bubbly soap foam on Pompom! Scrub scrub scrub~ 🧼');
+    setMessage('Rubbed bubbly soap foam on Pompom! Scrub scrub scrub~');
   };
 
   // Bathtub Rinse
@@ -37,7 +45,7 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
     audioEngine.playWaterSplash();
     setIsSoapy(false);
     const newClean = Math.min(100, pet.cleanliness + 60);
-    setMessage('Shower rinsed all soap away! Pompom is squeaky clean! 🚿 (+60% Clean)');
+    setMessage('Shower rinsed all soap away! Pompom is squeaky clean! (+60% Clean)');
     await onUpdateStats({ cleanliness: newClean });
   };
 
@@ -45,7 +53,7 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
   const handleBrushTeeth = async () => {
     audioEngine.playWaterSplash();
     setIsBrushing(true);
-    setMessage('Brushing Pompom\'s teeth... Sparkly white smile! 🪥✨');
+    setMessage('Brushing Pompom\'s teeth... Sparkly white smile!');
 
     setTimeout(async () => {
       setIsBrushing(false);
@@ -60,7 +68,7 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
     audioEngine.playWaterSplash();
     audioEngine.playCoinSound();
     setIsFlushing(true);
-    setMessage('Flush! Pompom earned +10 bonus coins for hygiene! 🚽🪙');
+    setMessage('Flush! Pompom earned +10 bonus coins for hygiene!');
 
     const newClean = Math.min(100, pet.cleanliness + 15);
     const newHunger = Math.max(0, pet.hunger - 5);
@@ -93,8 +101,9 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
           <span>⬅ Return to Living Room</span>
         </button>
 
-        <h1 className="text-sm md:text-base font-black tracking-wider text-sky-700">
-          COZY PASTEL BATHROOM 🛁
+        <h1 className="text-sm md:text-base font-black tracking-wider text-sky-700 flex items-center space-x-2">
+          <PixelBathtubIcon size={20} />
+          <span>COZY PASTEL BATHROOM</span>
         </h1>
 
         <div className="flex items-center space-x-2 rounded-xl bg-sky-100 px-3 py-1.5 font-black text-sky-800 shadow-inner">
@@ -221,15 +230,17 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
             <div className="flex justify-center space-x-3">
               <button
                 onClick={handleApplySoap}
-                className="rounded-xl bg-pink-400 px-5 py-2.5 text-xs font-black text-white shadow-md hover:bg-pink-500 active:scale-95"
+                className="flex items-center space-x-1.5 rounded-xl bg-pink-400 px-5 py-2.5 text-xs font-black text-white shadow-md hover:bg-pink-500 active:scale-95"
               >
-                🧼 Apply Bubbly Soap
+                <PixelCleanliness size={16} />
+                <span>Apply Bubbly Soap</span>
               </button>
               <button
                 onClick={handleRinseClean}
-                className="rounded-xl bg-sky-500 px-5 py-2.5 text-xs font-black text-white shadow-md hover:bg-sky-600 active:scale-95"
+                className="flex items-center space-x-1.5 rounded-xl bg-sky-500 px-5 py-2.5 text-xs font-black text-white shadow-md hover:bg-sky-600 active:scale-95"
               >
-                🚿 Rinse Clean (+60%)
+                <PixelShower size={16} />
+                <span>Rinse Clean (+60%)</span>
               </button>
             </div>
           )}
@@ -239,9 +250,10 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
               <button
                 onClick={handleBrushTeeth}
                 disabled={isBrushing}
-                className="rounded-xl bg-indigo-500 px-6 py-2.5 text-xs font-black text-white shadow-md hover:bg-indigo-600 disabled:opacity-50 active:scale-95"
+                className="flex items-center space-x-1.5 rounded-xl bg-indigo-500 px-6 py-2.5 text-xs font-black text-white shadow-md hover:bg-indigo-600 disabled:opacity-50 active:scale-95"
               >
-                {isBrushing ? 'Brushing Teeth... ✨' : '🪥 Brush Teeth (+25%)'}
+                <PixelToothbrushIcon size={16} />
+                <span>{isBrushing ? 'Brushing Teeth...' : 'Brush Teeth (+25%)'}</span>
               </button>
             </div>
           )}
@@ -251,9 +263,10 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
               <button
                 onClick={handleToiletFlush}
                 disabled={isFlushing}
-                className="rounded-xl bg-emerald-500 px-6 py-2.5 text-xs font-black text-white shadow-md hover:bg-emerald-600 disabled:opacity-50 active:scale-95"
+                className="flex items-center space-x-1.5 rounded-xl bg-emerald-500 px-6 py-2.5 text-xs font-black text-white shadow-md hover:bg-emerald-600 disabled:opacity-50 active:scale-95"
               >
-                {isFlushing ? 'Flushing... 🚽' : '🚽 Flush Toilet (+10 Coins Bonus!)'}
+                <PixelToiletIcon size={16} />
+                <span>{isFlushing ? 'Flushing...' : 'Flush Toilet (+10 Coins Bonus!)'}</span>
               </button>
             </div>
           )}
@@ -263,9 +276,10 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
         <div className="mt-3">
           <button
             onClick={handleCompleteBath}
-            className="w-full rounded-2xl bg-sky-600 py-3 text-xs font-black text-white shadow-lg hover:bg-sky-700 active:scale-95"
+            className="flex items-center justify-center space-x-2 w-full rounded-2xl bg-sky-600 py-3 text-xs font-black text-white shadow-lg hover:bg-sky-700 active:scale-95"
           >
-            ✨ Finish Bath & Restore 100% Cleanliness
+            <PixelSparkle size={18} />
+            <span>Finish Bath & Restore 100% Cleanliness</span>
           </button>
         </div>
       </footer>
@@ -274,3 +288,4 @@ export const BathroomView: React.FC<BathroomViewProps> = ({
 };
 
 export default BathroomView;
+

@@ -2,7 +2,20 @@
 
 import React, { useState } from 'react';
 import PompomPixel from '@/components/PompomPixel';
-import { PixelCoin, PixelHunger, PixelEnergy, PixelHappiness } from '@/components/PixelIcons';
+import {
+  PixelCoin,
+  PixelMochi,
+  PixelOnigiri,
+  PixelPudding,
+  PixelPancake,
+  PixelShortcake,
+  PixelBento,
+  PixelMilk,
+  PixelBoba,
+  PixelMatcha,
+  PixelSoda,
+  PixelElixir,
+} from '@/components/PixelIcons';
 import { Pet } from '@/lib/petService';
 import { audioEngine } from '@/lib/audioService';
 
@@ -15,24 +28,53 @@ export interface FoodItem {
   energyGain?: number;
   happinessGain?: number;
   description: string;
-  svgIcon: string;
+  iconKey: string;
 }
 
+const renderFoodIcon = (iconKey: string, size = 28) => {
+  switch (iconKey) {
+    case 'mochi':
+      return <PixelMochi size={size} />;
+    case 'onigiri':
+      return <PixelOnigiri size={size} />;
+    case 'pudding':
+      return <PixelPudding size={size} />;
+    case 'pancake':
+      return <PixelPancake size={size} />;
+    case 'shortcake':
+      return <PixelShortcake size={size} />;
+    case 'bento':
+      return <PixelBento size={size} />;
+    case 'milk':
+      return <PixelMilk size={size} />;
+    case 'boba':
+      return <PixelBoba size={size} />;
+    case 'matcha':
+      return <PixelMatcha size={size} />;
+    case 'soda':
+      return <PixelSoda size={size} />;
+    case 'elixir':
+      return <PixelElixir size={size} />;
+    default:
+      return <PixelMochi size={size} />;
+  }
+};
+
 const FOOD_MENU: FoodItem[] = [
-  { id: 'strawberry_mochi', name: 'Strawberry Mochi', type: 'food', cost: 80, hungerGain: 15, happinessGain: 5, description: 'Soft strawberry rice cake', svgIcon: '🍡' },
-  { id: 'onigiri', name: 'Triangle Onigiri', type: 'food', cost: 150, hungerGain: 40, description: 'Rice triangle wrapped in nori', svgIcon: '🍙' },
-  { id: 'caramel_pudding', name: 'Caramel Pudding', type: 'food', cost: 200, hungerGain: 35, happinessGain: 15, description: 'Custard with caramel glaze', svgIcon: '🍮' },
-  { id: 'rainbow_pancake', name: 'Rainbow Pancake', type: 'food', cost: 350, hungerGain: 55, happinessGain: 20, description: 'Fluffy pancake stack', svgIcon: '🥞' },
-  { id: 'strawberry_shortcake', name: 'Strawberry Shortcake', type: 'food', cost: 500, hungerGain: 75, happinessGain: 30, description: 'Layer cake with fresh cream', svgIcon: '🍰' },
-  { id: 'royal_golden_bento', name: 'Royal Golden Bento', type: 'food', cost: 850, hungerGain: 100, happinessGain: 40, description: 'Royal bento feast', svgIcon: '🍱' },
+  { id: 'strawberry_mochi', name: 'Strawberry Mochi', type: 'food', cost: 80, hungerGain: 15, happinessGain: 5, description: 'Soft strawberry rice cake', iconKey: 'mochi' },
+  { id: 'onigiri', name: 'Triangle Onigiri', type: 'food', cost: 150, hungerGain: 40, description: 'Rice triangle wrapped in nori', iconKey: 'onigiri' },
+  { id: 'caramel_pudding', name: 'Caramel Pudding', type: 'food', cost: 200, hungerGain: 35, happinessGain: 15, description: 'Custard with caramel glaze', iconKey: 'pudding' },
+  { id: 'rainbow_pancake', name: 'Rainbow Pancake', type: 'food', cost: 350, hungerGain: 55, happinessGain: 20, description: 'Fluffy pancake stack', iconKey: 'pancake' },
+  { id: 'strawberry_shortcake', name: 'Strawberry Shortcake', type: 'food', cost: 500, hungerGain: 75, happinessGain: 30, description: 'Layer cake with fresh cream', iconKey: 'shortcake' },
+  { id: 'royal_golden_bento', name: 'Royal Golden Bento', type: 'food', cost: 850, hungerGain: 100, happinessGain: 40, description: 'Royal bento feast', iconKey: 'bento' },
 ];
 
 const DRINK_MENU: FoodItem[] = [
-  { id: 'warm_milk', name: 'Warm Milk', type: 'drink', cost: 100, energyGain: 15, happinessGain: 10, description: 'Comforting glass of milk', svgIcon: '🥛' },
-  { id: 'boba_tea', name: 'Boba Milk Tea', type: 'drink', cost: 250, energyGain: 30, happinessGain: 25, description: 'Sweet tea with boba pearls', svgIcon: '🧋' },
-  { id: 'matcha_latte', name: 'Matcha Latte', type: 'drink', cost: 320, energyGain: 40, happinessGain: 20, description: 'Rich Uji matcha latte', svgIcon: '🍵' },
-  { id: 'berry_soda', name: 'Berry Soda', type: 'drink', cost: 400, energyGain: 50, happinessGain: 35, description: 'Fizzy sparkling soda', svgIcon: '🥤' },
-  { id: 'starlight_elixir', name: 'Starlight Elixir', type: 'drink', cost: 900, energyGain: 100, happinessGain: 50, description: 'Magical glowing potion', svgIcon: '🧪' },
+  { id: 'warm_milk', name: 'Warm Milk', type: 'drink', cost: 100, energyGain: 15, happinessGain: 10, description: 'Comforting glass of milk', iconKey: 'milk' },
+  { id: 'boba_tea', name: 'Boba Milk Tea', type: 'drink', cost: 250, energyGain: 30, happinessGain: 25, description: 'Sweet tea with boba pearls', iconKey: 'boba' },
+  { id: 'matcha_latte', name: 'Matcha Latte', type: 'drink', cost: 320, energyGain: 40, happinessGain: 20, description: 'Rich Uji matcha latte', iconKey: 'matcha' },
+  { id: 'berry_soda', name: 'Berry Soda', type: 'drink', cost: 400, energyGain: 50, happinessGain: 35, description: 'Fizzy sparkling soda', iconKey: 'soda' },
+  { id: 'starlight_elixir', name: 'Starlight Elixir', type: 'drink', cost: 900, energyGain: 100, happinessGain: 50, description: 'Magical glowing potion', iconKey: 'elixir' },
 ];
 
 export interface DiningRoomViewProps {
@@ -49,26 +91,26 @@ export const DiningRoomView: React.FC<DiningRoomViewProps> = ({
   const [activeTab, setActiveTab] = useState<'food' | 'drink'>('food');
   const [currentPlateItem, setCurrentPlateItem] = useState<FoodItem | null>(null);
   const [isEating, setIsEating] = useState(false);
-  const [message, setMessage] = useState('Welcome to Pompom\'s Dining Room! Select food to serve on the table 🍽️');
+  const [message, setMessage] = useState('Welcome to Pompom\'s Dining Room! Select food to serve on the table');
 
   const handleSelectFood = async (item: FoodItem) => {
     if (pet.coins < item.cost) {
       audioEngine.playLoseSound();
-      setMessage(`Not enough coins for ${item.name}! (Need 🪙 ${item.cost})`);
+      setMessage(`Not enough coins for ${item.name}! (Need ${item.cost} Coins)`);
       return;
     }
 
     setCurrentPlateItem(item);
     setIsEating(true);
     audioEngine.playEatSound();
-    setMessage(`Serving ${item.name} on the plate! Yum nom nom~ 😋`);
+    setMessage(`Serving ${item.name} on the plate! Yum nom nom~`);
 
     await onFeedItem(item);
 
     setTimeout(() => {
       setIsEating(false);
       setCurrentPlateItem(null);
-      setMessage(`Pompom finished eating ${item.name}! So satisfied~ 💕`);
+      setMessage(`Pompom finished eating ${item.name}! So satisfied~`);
     }, 2800);
   };
 
@@ -87,7 +129,7 @@ export const DiningRoomView: React.FC<DiningRoomViewProps> = ({
         </button>
 
         <h1 className="text-sm md:text-base font-black tracking-wider text-orange-700">
-          DINING ROOM & KITCHEN 🍱
+          DINING ROOM & KITCHEN
         </h1>
 
         <div className="flex items-center space-x-2 rounded-xl bg-amber-100 px-3 py-1.5 font-black text-amber-800 shadow-inner">
@@ -148,7 +190,9 @@ export const DiningRoomView: React.FC<DiningRoomViewProps> = ({
             {/* Ceramic Plate */}
             <div className="relative flex items-center justify-center w-28 h-10 bg-white rounded-full border-2 border-slate-300 shadow-inner">
               {currentPlateItem ? (
-                <div className="text-3xl animate-bounce">{currentPlateItem.svgIcon}</div>
+                <div className="animate-bounce flex items-center justify-center">
+                  {renderFoodIcon(currentPlateItem.iconKey, 32)}
+                </div>
               ) : (
                 <span className="text-[10px] font-bold text-slate-400">Empty Plate</span>
               )}
@@ -163,19 +207,21 @@ export const DiningRoomView: React.FC<DiningRoomViewProps> = ({
         <div className="mb-3 flex space-x-3">
           <button
             onClick={() => setActiveTab('food')}
-            className={`flex-1 rounded-xl py-2 text-xs font-black transition-all ${
+            className={`flex-1 flex items-center justify-center space-x-2 rounded-xl py-2 text-xs font-black transition-all ${
               activeTab === 'food' ? 'bg-orange-500 text-white shadow-md' : 'bg-orange-100 text-orange-900'
             }`}
           >
-            🍱 Food Menu
+            <PixelBento size={18} />
+            <span>Food Menu</span>
           </button>
           <button
             onClick={() => setActiveTab('drink')}
-            className={`flex-1 rounded-xl py-2 text-xs font-black transition-all ${
+            className={`flex-1 flex items-center justify-center space-x-2 rounded-xl py-2 text-xs font-black transition-all ${
               activeTab === 'drink' ? 'bg-amber-500 text-white shadow-md' : 'bg-amber-100 text-amber-900'
             }`}
           >
-            🧋 Drink Menu
+            <PixelBoba size={18} />
+            <span>Drink Menu</span>
           </button>
         </div>
 
@@ -188,7 +234,9 @@ export const DiningRoomView: React.FC<DiningRoomViewProps> = ({
               className="cursor-pointer flex items-center justify-between rounded-xl bg-orange-50 p-2.5 border border-orange-200 hover:border-orange-400 hover:bg-orange-100 transition-all active:scale-95"
             >
               <div className="flex items-center space-x-2">
-                <span className="text-2xl">{item.svgIcon}</span>
+                <div className="flex-shrink-0">
+                  {renderFoodIcon(item.iconKey, 28)}
+                </div>
                 <div>
                   <h4 className="text-xs font-black text-slate-800">{item.name}</h4>
                   <div className="flex space-x-1 text-[9px] font-bold text-orange-600">
@@ -212,3 +260,4 @@ export const DiningRoomView: React.FC<DiningRoomViewProps> = ({
 };
 
 export default DiningRoomView;
+

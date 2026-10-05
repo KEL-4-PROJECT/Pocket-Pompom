@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import PompomPixel from '@/components/PompomPixel';
-import { PixelCoin, PixelPlayIcon } from '@/components/PixelIcons';
+import { PixelPlayIcon, PixelUser, PixelCloseIcon, PixelSparkle } from '@/components/PixelIcons';
 import { audioEngine } from '@/lib/audioService';
 
 export interface EntryLoginModalProps {
@@ -76,9 +76,10 @@ export const EntryLoginModal: React.FC<EntryLoginModalProps> = ({
         {onCancel && (
           <button
             onClick={onCancel}
-            className="absolute top-4 right-4 rounded-xl bg-slate-200 px-3 py-1 text-xs font-bold text-slate-700 hover:bg-slate-300 active:scale-95"
+            className="absolute top-4 right-4 flex items-center space-x-1 rounded-xl bg-slate-200 px-3 py-1 text-xs font-bold text-slate-700 hover:bg-slate-300 active:scale-95"
           >
-            ✕ Batal
+            <PixelCloseIcon size={12} />
+            <span>Batal</span>
           </button>
         )}
 
@@ -86,14 +87,14 @@ export const EntryLoginModal: React.FC<EntryLoginModalProps> = ({
         <div className="mb-4 flex items-center space-x-2 rounded-2xl bg-white/90 px-4 py-2 shadow border border-pink-300">
           <PixelPlayIcon size={24} />
           <h2 className="text-sm md:text-base font-black tracking-wider text-pink-700 uppercase">
-            Sistem Masuk Pocket Pompom 🎀
+            Sistem Masuk Pocket Pompom
           </h2>
         </div>
 
         {/* Character Host */}
         <div className="mb-4 flex flex-col items-center">
           <div className="mb-3 max-w-xs rounded-2xl bg-white px-4 py-2.5 text-center text-xs font-bold text-slate-800 shadow-md border-2 border-pink-300 animate-bounce">
-            "Halo! Siapa namamu? Koin, pakaian & barang yang kamu beli akan tersimpan otomatis! ✨"
+            "Halo! Siapa namamu? Koin, pakaian & barang yang kamu beli akan tersimpan otomatis!"
           </div>
           <PompomPixel state="play" outfit="none" accessory="pink_ribbon" size={160} />
         </div>
@@ -133,8 +134,9 @@ export const EntryLoginModal: React.FC<EntryLoginModalProps> = ({
         {/* Saved Profiles Quick Select */}
         {savedProfiles.length > 0 && (
           <div className="mt-5 w-full border-t border-pink-200 pt-3">
-            <p className="text-[11px] font-black text-slate-600 mb-2 text-center">
-              👤 PROFIL TERSIMPAN DI PERANGKAT INI:
+            <p className="text-[11px] font-black text-slate-600 mb-2 text-center flex items-center justify-center space-x-1">
+              <PixelUser size={14} />
+              <span>PROFIL TERSIMPAN DI PERANGKAT INI:</span>
             </p>
             <div className="flex flex-wrap justify-center gap-2 max-h-24 overflow-y-auto">
               {savedProfiles.map((profName) => (
@@ -156,3 +158,4 @@ export const EntryLoginModal: React.FC<EntryLoginModalProps> = ({
 };
 
 export default EntryLoginModal;
+
